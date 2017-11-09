@@ -13,13 +13,27 @@ static void sighandler(int signo)
     fd = open("program_exited.txt", O_CREAT | O_WRONLY | O_APPEND, 0644);
     if (fd < 0) {
       printf("%s\n", strerror(errno));
-      exit(1);
     }
-    char msg[] = "the program exited due to SIGINT";
+    char msg[] = "the program exited due to SIGINT\n";
     write(fd, msg, sizeof(msg));
     close(fd);
     exit(1);
   }
 
+  if (signo == SIGUSR1) {
+    printf("%d\n", getppid());
+  }
+}
+
+int main()
+{
+  signal(SIGINT, sighandler);
+  signal(SIGUSR1, sighandler);
+
+  while (1) {
+    printf("%d\n", getpid());
+    sleep(1);
+  }
   
+  return 0;
 }
